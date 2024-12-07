@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import 'aos/dist/aos.css'; // Import AOS CSS
 import AOS from 'aos'; // Import AOS
 
-
 const timeAgo = (date) => {
   const now = new Date();
   const diffInSeconds = Math.floor((now - new Date(date)) / 1000);
@@ -29,14 +28,24 @@ const getArticles = async () => {
 
 function App() {
   const [articles, setArticles] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     AOS.init({ duration: 500, easing: 'ease-in-out', once: true });
+
     const fetchArticles = async () => {
       const data = await getArticles();
       setArticles(data);
     };
+
     fetchArticles();
+
+    // Set timeout to simulate loading delay
+    const timer = setTimeout(() => {
+      setLoading(false); // Stop loading after 3 seconds
+    }, 3000);
+
+    return () => clearTimeout(timer); // Clean up timeout on unmount
   }, []);
 
   return (
@@ -104,13 +113,19 @@ function App() {
           </button>
         </div>
       </div>
-      <div className="carousel w-full">
-        <div id="item1" className="carousel-item w-full h-[60vh] sm:h-[50vh] md:h-[60vh] lg:h-[70vh] xl:h-[80vh]">
-          <img
-            src="./images/bg1.jpg"
-            className="w-full h-full object-cover"
-          />
-        </div>
+      <div className="flex carousel w-full">
+        {!loading && (
+          <div id="item1" className="carousel-item w-full h-[60vh] sm:h-[50vh] md:h-[60vh] lg:h-[70vh] xl:h-[80vh]">
+            <img
+              src="./images/bg1.jpg"
+              className="w-full h-full object-cover"
+              alt="Background Image"
+            />
+          </div>
+        )}
+        {loading && (
+           <div className="w-full h-[60vh] sm:h-[50vh] md:h-[60vh] lg:h-[70vh] xl:h-[80vh] animate-pulse bg-gray-800"></div>
+        )}
       </div>
 
       <h1 className='text-center mt-4 text-2xl font-bold'>Berita Terbaru</h1>
